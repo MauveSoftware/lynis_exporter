@@ -4,18 +4,26 @@ import (
 	"bufio"
 	"bytes"
 	"io/ioutil"
+	"os"
 	"regexp"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+const (
+	ns = "lynis_"
+)
+
 var (
-	regex *regexp.Regexp
+	regex   *regexp.Regexp
+	ageDesc *prometheus.Desc
 )
 
 func init() {
 	regex = regexp.MustCompile(`^([^=]+)=(.*)$`)
+	ageDesc = prometheus.NewDesc(ns+"report_age_seconds", "Report age in seconds", nil, nil)
 }
 
 type collector struct {
@@ -26,11 +34,20 @@ type collector struct {
 
 func newCollector(cfg *Config) *collector {
 	return &collector{
-		cfg: cfg,
+		cfg:   cfg,
+		descs: []*prometheus.Desc{ageDesc},
 	}
 }
 
 func (c *collector) collect() error {
+	info, err := os.Stat(c.cfg.ReportFilePath)
+	if err != nil {
+		return errors.Wrap(err, "cloud not get file info for report file")
+	}
+
+	age := float64(time.Since(info.ModTime()).Seconds())
+	c.metrics = append(c.metrics, prometheus.MustNewConstMetric(ageDesc, prometheus.GaugeValue, age))
+
 	b, err := ioutil.ReadFile(c.cfg.ReportFilePath)
 	if err != nil {
 		return errors.Wrap(err, "cloud not read report file")
@@ -66,7 +83,7 @@ func (c *collector) parseForMetric(field, value string) error {
 		name = def.MetricName
 	}
 
-	desc := prometheus.NewDesc("lynis_"+name, def.Description, nil, nil)
+	desc := prometheus.NewDesc(ns+name, def.Description, nil, nil)
 	c.descs = append(c.descs, desc)
 
 	conv := converterByName(def.Converter)

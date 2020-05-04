@@ -47,7 +47,7 @@ func startServer() {
 		w.Write([]byte(`<html>
 			<head><title>Lynis Exporter (Version ` + version + `)</title></head>
 			<body>
-			<h1>lynis Exporter by Mauve Mailorder Software</h1>
+			<h1>Lynis Exporter by Mauve Mailorder Software</h1>
 			<h2>Metrics</h2>
 			<p><a href="/metrics">here</a></p>
 			<h2>More information</h2>
