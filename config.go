@@ -7,11 +7,13 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
+// Config represents the exporter configuration file
 type Config struct {
 	ReportFilePath string                      `yaml:"reportfile_path"`
 	Metrics        map[string]MetricDefinition `yaml:"metrics"`
 }
 
+// MetricDefinition defines the source and conversions for a single metric
 type MetricDefinition struct {
 	MetricName  string `yaml:"name"`
 	Description string `yaml:"description"`
