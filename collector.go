@@ -89,10 +89,14 @@ func (c *collector) parseForMetric(field, value string) error {
 	conv := converterByName(def.Converter)
 	v, err := conv(value)
 	if err != nil {
-		errors.Wrapf(err, "could not parse value (%s) from field %s", value, field)
+		return errors.Wrapf(err, "could not parse value (%s) from field %s", value, field)
 	}
 
-	m := prometheus.MustNewConstMetric(desc, prometheus.GaugeValue, v)
+	m, err := prometheus.NewConstMetric(desc, prometheus.GaugeValue, v)
+	if err != nil {
+		return errors.Wrapf(err, "invalid metric definition for field %s", field)
+	}
+
 	c.metrics = append(c.metrics, m)
 
 	return nil
