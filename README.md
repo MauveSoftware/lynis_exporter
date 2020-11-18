@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/MauveSoftware/lynis_exporter.svg?style=shield)](https://circleci.com/gh/MauveSoftware/lynis_exporter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mauvesoftware/lynis_exporter)](https://goreportcard.com/report/github.com/mauvesoftware/lynis_exporter)
+
 # lynis_exporter
 Simple prometheus exporter for Lynis audit reports
 
