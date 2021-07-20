@@ -8,7 +8,6 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/prometheus/common/log"
 	"github.com/sirupsen/logrus"
 )
 
@@ -90,8 +89,11 @@ func handleMetricsRequest(w http.ResponseWriter, r *http.Request) error {
 
 	reg.MustRegister(c)
 
+	l := logrus.New()
+	l.Level = logrus.ErrorLevel
+
 	promhttp.HandlerFor(reg, promhttp.HandlerOpts{
-		ErrorLog:      log.NewErrorLogger(),
+		ErrorLog:      l,
 		ErrorHandling: promhttp.ContinueOnError}).ServeHTTP(w, r)
 
 	return nil
