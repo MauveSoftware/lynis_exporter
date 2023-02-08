@@ -1,0 +1,5 @@
+package_audit_tool_found=1
+vulnerable_packages_found=1
+hardening_index=83
+finish=true
+test=foo

@@ -1,0 +1,7 @@
+reportfile_path: example/report.dat
+metrics:
+  finish:
+    description: "Finished?"
+    converter: "bool"
+  hardening_index:
+    description: "Hardening index"
