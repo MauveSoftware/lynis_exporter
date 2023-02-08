@@ -14,11 +14,14 @@ import (
 const version string = "0.1.0"
 
 var (
-	showVersion   = flag.Bool("version", false, "Print version information.")
-	listenAddress = flag.String("web.listen-address", ":9730", "Address on which to expose metrics and web interface.")
-	metricsPath   = flag.String("web.telemetry-path", "/metrics", "Path under which to expose metrics.")
-	configFile    = flag.String("config.path", "config.yml", "Path to config file")
-	cfg           *Config
+	showVersion      = flag.Bool("version", false, "Print version information.")
+	listenAddress    = flag.String("web.listen-address", ":9730", "Address on which to expose metrics and web interface.")
+	metricsPath      = flag.String("web.telemetry-path", "/metrics", "Path under which to expose metrics.")
+	configFile       = flag.String("config.path", "config.yml", "Path to config file")
+	tlsEnabled       = flag.Bool("tls.enabled", false, "Enables TLS")
+	tlsCertChainPath = flag.String("tls.cert-file", "", "Path to TLS cert file")
+	tlsKeyPath       = flag.String("tls.key-file", "", "Path to TLS key file")
+	cfg              *Config
 )
 
 func main() {
@@ -63,7 +66,12 @@ func startServer() {
 
 	http.HandleFunc(*metricsPath, errorHandler(handleMetricsRequest))
 
-	logrus.Infof("Listening for %s on %s", *metricsPath, *listenAddress)
+	logrus.Infof("Listening for %s on %s (TLS: %v)", *metricsPath, *listenAddress, *tlsEnabled)
+	if *tlsEnabled {
+		logrus.Fatal(http.ListenAndServeTLS(*listenAddress, *tlsCertChainPath, *tlsKeyPath, nil))
+		return
+	}
+
 	logrus.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
 
