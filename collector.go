@@ -46,7 +46,7 @@ func newCollector(cfg *Config) *collector {
 func (c *collector) collect() error {
 	info, err := os.Stat(c.cfg.ReportFilePath)
 	if err != nil {
-		return errors.Wrap(err, "cloud not get file info for report file")
+		return errors.Wrap(err, "could not get file info for report file")
 	}
 
 	age := float64(time.Since(info.ModTime()).Seconds())
@@ -54,7 +54,7 @@ func (c *collector) collect() error {
 
 	b, err := ioutil.ReadFile(c.cfg.ReportFilePath)
 	if err != nil {
-		return errors.Wrap(err, "cloud not read report file")
+		return errors.Wrap(err, "could not read report file")
 	}
 
 	r := bytes.NewReader(b)
