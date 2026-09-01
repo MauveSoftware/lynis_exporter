@@ -7,7 +7,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"time"
@@ -52,7 +51,7 @@ func (c *collector) collect() error {
 	age := float64(time.Since(info.ModTime()).Seconds())
 	c.metrics = append(c.metrics, prometheus.MustNewConstMetric(ageDesc, prometheus.GaugeValue, age))
 
-	b, err := ioutil.ReadFile(c.cfg.ReportFilePath)
+	b, err := os.ReadFile(c.cfg.ReportFilePath)
 	if err != nil {
 		return errors.Wrap(err, "could not read report file")
 	}

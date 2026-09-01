@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -50,7 +51,7 @@ func printVersion() {
 func startServer() {
 	logrus.Infof("Starting Lynis exporter (Version: %s)", version)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<html>
+		_, err := w.Write([]byte(`<html>
 			<head><title>Lynis Exporter (Version ` + version + `)</title></head>
 			<body>
 			<h1>Lynis Exporter by Mauve Mailorder Software</h1>
@@ -60,6 +61,9 @@ func startServer() {
 			<p><a href="https://github.com/MauveSoftware/lynis_exporter">github.com/MauveSoftware/lynis_exporter</a></p>
 			</body>
 			</html>`))
+		if err != nil {
+			logrus.Errorln(err)
+		}
 	})
 
 	var err error
@@ -71,12 +75,17 @@ func startServer() {
 	http.HandleFunc(*metricsPath, errorHandler(handleMetricsRequest))
 
 	logrus.Infof("Listening for %s on %s (TLS: %v)", *metricsPath, *listenAddress, *tlsEnabled)
+	srv := &http.Server{
+		Addr:              *listenAddress,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
 	if *tlsEnabled {
-		logrus.Fatal(http.ListenAndServeTLS(*listenAddress, *tlsCertChainPath, *tlsKeyPath, nil))
+		logrus.Fatal(srv.ListenAndServeTLS(*tlsCertChainPath, *tlsKeyPath))
 		return
 	}
 
-	logrus.Fatal(http.ListenAndServe(*listenAddress, nil))
+	logrus.Fatal(srv.ListenAndServe())
 }
 
 func errorHandler(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {

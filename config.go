@@ -5,7 +5,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v1"
@@ -25,7 +25,7 @@ type MetricDefinition struct {
 }
 
 func loadConfigFromFile(path string) (*Config, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path) // #nosec G304 -- path is an operator-controlled CLI flag, not untrusted input
 	if err != nil {
 		return nil, errors.Wrap(err, "could not read config file")
 	}
