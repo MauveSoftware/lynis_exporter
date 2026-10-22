@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v3"
 )
 
 // Config represents the exporter configuration file
