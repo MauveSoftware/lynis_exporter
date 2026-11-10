@@ -1,6 +1,6 @@
 module github.com/MauveSoftware/lynis_exporter
 
-go 1.26.10
+go 1.26.11
 
 require (
 	github.com/pkg/errors v0.9.1
